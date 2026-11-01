@@ -1,0 +1,48 @@
+<UserControl
+    x:Class="BusyMouse.WinUI.Controls.ModePreview"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsTabStop="False"
+    AutomationProperties.AccessibilityView="Raw">
+
+  <Grid x:Name="Root">
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="ToneStates">
+        <!-- Idle: everything in the muted stroke colour. -->
+        <VisualState x:Name="Idle" />
+        <VisualState x:Name="Active">
+          <VisualState.Setters>
+            <Setter Target="Ink.Background" Value="{ThemeResource AccentFillColorDefaultBrush}" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="Tile">
+          <VisualState.Setters>
+            <Setter Target="Ink.Background" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Target="GuideInk.Background" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+            <Setter Target="GuideInk.Opacity" Value="0.5" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="TileSelected">
+          <VisualState.Setters>
+            <Setter Target="Ink.Background" Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+            <Setter Target="GuideInk.Background" Value="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+            <Setter Target="GuideInk.Opacity" Value="0.5" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <!-- Never shown: they hold the cursor's and the guide's colours for the tone, which the code paints with. -->
+    <Border x:Name="Ink" Background="{ThemeResource ControlStrongStrokeColorDefaultBrush}" Visibility="Collapsed" />
+    <Border x:Name="GuideInk" Background="{ThemeResource ControlStrongStrokeColorDefaultBrush}" Visibility="Collapsed" />
+
+    <!-- Drawn on a 114 unit stage, centred on 57,57: the guide, then what the motion leaves behind, then the cursor. -->
+    <Viewbox Stretch="Uniform">
+      <Grid Width="114" Height="114">
+        <Canvas x:Name="Backdrop" />
+        <Canvas x:Name="Effects" />
+        <Canvas x:Name="Front" />
+      </Grid>
+    </Viewbox>
+  </Grid>
+</UserControl>

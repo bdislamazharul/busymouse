@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>BusyMouse.WinUI</RootNamespace>
+    <AssemblyName>BusyMouse</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseWinUI>true</UseWinUI>
+    <Platforms>x64;ARM64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' != 'ARM64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <!-- Program.cs owns Main: it parses the command line and enforces a single instance before XAML starts. -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\BusyMouse.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Product>BusyMouse</Product>
+    <Company>Azharul Islam</Company>
+    <Authors>Azharul Islam</Authors>
+    <Copyright>© 2026 Azharul Islam</Copyright>
+    <Description>Keeps your PC awake by gently nudging the pointer.</Description>
+    <!-- English only: no satellite resources for other languages. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\*.ico" CopyToOutputDirectory="PreserveNewest" />
+    <!-- The license goes wherever the app does; About opens it. -->
+    <Content Include="..\LICENSE.txt" Link="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Only the WinUI pieces of the Windows App SDK; the full metapackage also ships AI, ML (ONNX, DirectML), Search and Widgets. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="2.6.4" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.DWrite" Version="2.6.4" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BusyMouse.Core\BusyMouse.Core.csproj" />
+  </ItemGroup>
+
+  <!-- The Windows App SDK copies its own .mui language files for ~85 languages, ignoring SatelliteResourceLanguages. Keep en-us only. -->
+  <Target Name="KeepEnglishMuiOnly" AfterTargets="AddMicrosoftWindowsAppSDKPayloadFilesFromComponents">
+    <ItemGroup>
+      <_ForeignMui Include="@(None)" Condition="'%(Extension)' == '.mui' and !$([System.String]::Copy('%(None.Link)').StartsWith('en-us', StringComparison.OrdinalIgnoreCase))" />
+      <None Remove="@(_ForeignMui)" />
+      <_ForeignMuiRef Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' == '.mui' and !$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubDirectory)').StartsWith('en-us', StringComparison.OrdinalIgnoreCase))" />
+      <ReferenceCopyLocalPaths Remove="@(_ForeignMuiRef)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

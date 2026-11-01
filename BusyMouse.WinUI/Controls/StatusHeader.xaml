@@ -1,0 +1,330 @@
+<UserControl
+    x:Class="BusyMouse.WinUI.Controls.StatusHeader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:BusyMouse.WinUI.Controls"
+    IsTabStop="False">
+
+  <UserControl.Resources>
+    <!-- The wave that rings out from the On/Off button while on. -->
+    <Storyboard x:Name="PulseMotion" RepeatBehavior="Forever">
+      <DoubleAnimation Storyboard.TargetName="PulseScale" Storyboard.TargetProperty="ScaleX" From="0.85" To="1.1" Duration="0:0:2.4">
+        <DoubleAnimation.EasingFunction>
+          <QuadraticEase EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+      <DoubleAnimation Storyboard.TargetName="PulseScale" Storyboard.TargetProperty="ScaleY" From="0.85" To="1.1" Duration="0:0:2.4">
+        <DoubleAnimation.EasingFunction>
+          <QuadraticEase EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+      <DoubleAnimation Storyboard.TargetName="Pulse" Storyboard.TargetProperty="Opacity" From="0.5" To="0" Duration="0:0:2.4">
+        <DoubleAnimation.EasingFunction>
+          <QuadraticEase EasingMode="EaseOut" />
+        </DoubleAnimation.EasingFunction>
+      </DoubleAnimation>
+    </Storyboard>
+
+    <!-- A little shake of the glyph after each nudge. -->
+    <Storyboard x:Name="NudgeMotion">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GlyphShake" Storyboard.TargetProperty="X">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.125" Value="2" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.25" Value="-2" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.375" Value="1" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GlyphShake" Storyboard.TargetProperty="Y">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.125" Value="-2" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.25" Value="2" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.375" Value="-1" />
+        <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+
+    <!-- The countdown starting over: the number it ended on lifts, grows and fades while the new one rises in. -->
+    <Storyboard x:Name="CountdownDissolve">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownGhost" Storyboard.TargetProperty="Opacity">
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+        <EasingDoubleKeyFrame KeyTime="0:0:0.4" Value="0">
+          <EasingDoubleKeyFrame.EasingFunction>
+            <QuadraticEase EasingMode="EaseOut" />
+          </EasingDoubleKeyFrame.EasingFunction>
+        </EasingDoubleKeyFrame>
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimation Storyboard.TargetName="GhostMove" Storyboard.TargetProperty="TranslateY" From="0" To="-6" Duration="0:0:0.4" />
+      <DoubleAnimation Storyboard.TargetName="GhostMove" Storyboard.TargetProperty="ScaleX" From="1" To="1.12" Duration="0:0:0.4" />
+      <DoubleAnimation Storyboard.TargetName="GhostMove" Storyboard.TargetProperty="ScaleY" From="1" To="1.12" Duration="0:0:0.4" />
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownText" Storyboard.TargetProperty="Opacity">
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0.15" Value="0" />
+        <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1">
+          <EasingDoubleKeyFrame.EasingFunction>
+            <QuadraticEase EasingMode="EaseOut" />
+          </EasingDoubleKeyFrame.EasingFunction>
+        </EasingDoubleKeyFrame>
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CountdownMove" Storyboard.TargetProperty="Y">
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="6" />
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0.15" Value="6" />
+        <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0">
+          <EasingDoubleKeyFrame.EasingFunction>
+            <QuadraticEase EasingMode="EaseOut" />
+          </EasingDoubleKeyFrame.EasingFunction>
+        </EasingDoubleKeyFrame>
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+
+    <!-- The hourglass: sand runs down for 8.6 s, then the glass flips at 8.8 to 10 s, just before every
+         second pane change. Flipped with a full bottom it looks just like the start, so it loops seamlessly. -->
+    <Storyboard x:Name="HourglassMotion" Duration="0:0:10" RepeatBehavior="Forever">
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TopLevel" Storyboard.TargetProperty="Y">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <LinearDoubleKeyFrame KeyTime="0:0:8.6" Value="6.9" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TopSandHold" Storyboard.TargetProperty="Y">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <LinearDoubleKeyFrame KeyTime="0:0:8.6" Value="-6.9" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BottomLevel" Storyboard.TargetProperty="Y">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <LinearDoubleKeyFrame KeyTime="0:0:8.6" Value="-6.9" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BottomSandHold" Storyboard.TargetProperty="Y">
+        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <LinearDoubleKeyFrame KeyTime="0:0:8.6" Value="6.9" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Stream" Storyboard.TargetProperty="Opacity">
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="1" />
+        <LinearDoubleKeyFrame KeyTime="0:0:8.4" Value="1" />
+        <LinearDoubleKeyFrame KeyTime="0:0:8.7" Value="0" />
+      </DoubleAnimationUsingKeyFrames>
+      <DoubleAnimationUsingKeyFrames Storyboard.TargetName="HourglassTurn" Storyboard.TargetProperty="Angle">
+        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+        <DiscreteDoubleKeyFrame KeyTime="0:0:8.8" Value="0" />
+        <EasingDoubleKeyFrame KeyTime="0:0:10" Value="180">
+          <EasingDoubleKeyFrame.EasingFunction>
+            <BackEase Amplitude="0.25" EasingMode="EaseInOut" />
+          </EasingDoubleKeyFrame.EasingFunction>
+        </EasingDoubleKeyFrame>
+      </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+
+    <!-- Grains falling through the neck: the dashed stream slides down one dash cycle at a time. -->
+    <Storyboard x:Name="GrainMotion" RepeatBehavior="Forever">
+      <DoubleAnimation Storyboard.TargetName="GrainFall" Storyboard.TargetProperty="Y" From="0" To="6" Duration="0:0:0.6" />
+    </Storyboard>
+  </UserControl.Resources>
+
+  <Grid x:Name="Root" Height="72" ColumnSpacing="12">
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="PowerStates">
+        <VisualState x:Name="Off" />
+        <VisualState x:Name="On">
+          <VisualState.Setters>
+            <Setter Target="Pulse.Visibility" Value="Visible" />
+            <Setter Target="Glyph.Foreground" Value="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Target="TopSand.Fill" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Target="BottomSand.Fill" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Setter Target="StreamLine.Stroke" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <!-- On/Off -->
+    <Grid Width="72" Height="72" ToolTipService.ToolTip="{x:Bind Model.PowerTip, Mode=OneWay}">
+      <Ellipse x:Name="Pulse"
+          Opacity="0"
+          RenderTransformOrigin="0.5,0.5"
+          Stroke="{ThemeResource AccentFillColorDefaultBrush}"
+          StrokeThickness="1.5"
+          Visibility="Collapsed">
+        <Ellipse.RenderTransform>
+          <ScaleTransform x:Name="PulseScale" ScaleX="0.85" ScaleY="0.85" />
+        </Ellipse.RenderTransform>
+      </Ellipse>
+      <ToggleButton x:Name="PowerButton"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          AutomationProperties.Name="Keep awake"
+          Click="PowerButton_Click"
+          Style="{StaticResource PowerToggleStyle}" />
+      <!-- The tray icon's drawing; it hops as it turns on and squashes as it turns off. -->
+      <Grid Width="26"
+          Height="26"
+          IsHitTestVisible="False"
+          RenderTransformOrigin="0.5,1">
+        <Grid.RenderTransform>
+          <CompositeTransform x:Name="HopMove" />
+        </Grid.RenderTransform>
+        <ctl:StateGlyph x:Name="Glyph"
+            Corded="True"
+            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            Look="{x:Bind Model.TrayIcon, Mode=OneWay}"
+            StrokeThickness="1.2">
+          <ctl:StateGlyph.RenderTransform>
+            <TranslateTransform x:Name="GlyphShake" />
+          </ctl:StateGlyph.RenderTransform>
+        </ctl:StateGlyph>
+      </Grid>
+    </Grid>
+
+    <!-- Off / Awake, and one line under it -->
+    <StackPanel Grid.Column="1"
+        VerticalAlignment="Center"
+        AutomationProperties.LiveSetting="Polite"
+        Background="Transparent"
+        ToolTipService.ToolTip="{x:Bind Model.StatusTip, Mode=OneWay}">
+      <TextBlock FontSize="20" FontWeight="SemiBold" LineHeight="28" Text="{x:Bind Model.StatusTitle, Mode=OneWay}" />
+      <TextBlock Style="{StaticResource CaptionTextStyle}"
+          Text="{x:Bind Model.StatusLine, Mode=OneWay}"
+          TextTrimming="CharacterEllipsis"
+          TextWrapping="NoWrap" />
+    </StackPanel>
+
+    <!-- Hourglass with the three panes, and the pin -->
+    <Grid x:Name="TimerArea"
+        Grid.Column="2"
+        MaxWidth="160"
+        VerticalAlignment="Center"
+        Background="Transparent"
+        PointerEntered="TimerArea_PointerEntered"
+        PointerExited="TimerArea_PointerExited">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <Button x:Name="TimerButton"
+          Padding="4"
+          AutomationProperties.Name="{x:Bind Model.TimerName, Mode=OneWay}"
+          Click="TimerButton_Click"
+          CornerRadius="6"
+          Style="{StaticResource SubtleButtonStyle}"
+          ToolTipService.ToolTip="{x:Bind Model.TimerTip, Mode=OneWay}">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <!-- Two round bulbs meeting at a narrow waist, between two caps; drawn on a 22 by 24 box. -->
+          <Grid Width="22" Height="24" RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+              <RotateTransform x:Name="HourglassTurn" />
+            </Grid.RenderTransform>
+            <Canvas>
+              <!-- The sand's level is a clip: its box moves one way and the sand inside it the other, so the
+                   sand stays put while the level drops in the top bulb and rises in the bottom one. -->
+              <Canvas>
+                <Canvas.Clip>
+                  <RectangleGeometry Rect="0,4.1,22,6.9" />
+                </Canvas.Clip>
+                <Canvas.RenderTransform>
+                  <TranslateTransform x:Name="TopLevel" />
+                </Canvas.RenderTransform>
+                <Path x:Name="TopSand"
+                    Data="M6,4.1 H16 C17.9,5.6 17.4,8.4 14.3,9.7 C12.8,10.4 11.7,10.8 11.2,11 H10.8 C10.3,10.8 9.2,10.4 7.7,9.7 C4.6,8.4 4.1,5.6 6,4.1 Z"
+                    Fill="{ThemeResource ControlStrongStrokeColorDefaultBrush}">
+                  <Path.RenderTransform>
+                    <TranslateTransform x:Name="TopSandHold" />
+                  </Path.RenderTransform>
+                </Path>
+              </Canvas>
+              <Canvas>
+                <Canvas.Clip>
+                  <RectangleGeometry Rect="0,19.9,22,6.9" />
+                </Canvas.Clip>
+                <Canvas.RenderTransform>
+                  <TranslateTransform x:Name="BottomLevel" />
+                </Canvas.RenderTransform>
+                <Path x:Name="BottomSand"
+                    Data="M6,19.9 H16 C17.9,18.4 17.4,15.6 14.3,14.3 C12.8,13.6 11.7,13.2 11.2,13 H10.8 C10.3,13.2 9.2,13.6 7.7,14.3 C4.6,15.6 4.1,18.4 6,19.9 Z"
+                    Fill="{ThemeResource ControlStrongStrokeColorDefaultBrush}">
+                  <Path.RenderTransform>
+                    <TranslateTransform x:Name="BottomSandHold" />
+                  </Path.RenderTransform>
+                </Path>
+              </Canvas>
+              <Canvas x:Name="Stream" Opacity="0">
+                <Canvas.Clip>
+                  <RectangleGeometry Rect="10,12,2,7.9" />
+                </Canvas.Clip>
+                <Path x:Name="StreamLine"
+                    Data="M11,6 V19.9"
+                    Stroke="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
+                    StrokeDashArray="1 2"
+                    StrokeThickness="1">
+                  <Path.RenderTransform>
+                    <TranslateTransform x:Name="GrainFall" />
+                  </Path.RenderTransform>
+                </Path>
+              </Canvas>
+              <Path Data="M5.4,3 C2.4,4.8 3,8.8 7.2,10.5 C9.2,11.2 10.1,11.4 10.1,12 C10.1,12.6 9.2,12.8 7.2,13.5 C3,15.2 2.4,19.2 5.4,21 H16.6 C19.6,19.2 19,15.2 14.8,13.5 C12.8,12.8 11.9,12.6 11.9,12 C11.9,11.4 12.8,11.2 14.8,10.5 C19,8.8 19.6,4.8 16.6,3 Z"
+                  Stroke="{ThemeResource TextFillColorSecondaryBrush}"
+                  StrokeLineJoin="Round"
+                  StrokeThickness="1.3" />
+              <Rectangle Canvas.Left="2.25" Canvas.Top="0.75" Width="17.5" Height="2.4" Fill="{ThemeResource TextFillColorSecondaryBrush}" RadiusX="1.2" RadiusY="1.2" />
+              <Rectangle Canvas.Left="2.25" Canvas.Top="20.85" Width="17.5" Height="2.4" Fill="{ThemeResource TextFillColorSecondaryBrush}" RadiusX="1.2" RadiusY="1.2" />
+            </Canvas>
+          </Grid>
+
+          <Grid MinWidth="76">
+            <StackPanel Opacity="{x:Bind PaneOpacity(Model.PaneIndex, 0), Mode=OneWay}">
+              <StackPanel.OpacityTransition>
+                <ScalarTransition Duration="0:0:0.35" />
+              </StackPanel.OpacityTransition>
+              <TextBlock Style="{StaticResource CaptionTextStyle}" Text="{x:Bind Model.Pane0Caption, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+              <TextBlock FontSize="16" FontWeight="SemiBold" LineHeight="22" Text="{x:Bind Model.Pane0Value, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+            <StackPanel Opacity="{x:Bind PaneOpacity(Model.PaneIndex, 1), Mode=OneWay}">
+              <StackPanel.OpacityTransition>
+                <ScalarTransition Duration="0:0:0.35" />
+              </StackPanel.OpacityTransition>
+              <TextBlock Style="{StaticResource CaptionTextStyle}" Text="{x:Bind Model.Pane1Caption, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+              <!-- The countdown, and the number it ended on, dissolving away as it starts over. -->
+              <Grid>
+                <TextBlock x:Name="CountdownText" FontSize="16" FontWeight="SemiBold" LineHeight="22" Text="{x:Bind Model.Pane1Value, Mode=OneWay}" TextTrimming="CharacterEllipsis">
+                  <TextBlock.RenderTransform>
+                    <TranslateTransform x:Name="CountdownMove" />
+                  </TextBlock.RenderTransform>
+                </TextBlock>
+                <TextBlock x:Name="CountdownGhost" FontSize="16" FontWeight="SemiBold" IsHitTestVisible="False" LineHeight="22" Opacity="0" RenderTransformOrigin="0,0.5" TextTrimming="CharacterEllipsis">
+                  <TextBlock.RenderTransform>
+                    <CompositeTransform x:Name="GhostMove" />
+                  </TextBlock.RenderTransform>
+                </TextBlock>
+              </Grid>
+            </StackPanel>
+            <StackPanel Opacity="{x:Bind PaneOpacity(Model.PaneIndex, 2), Mode=OneWay}">
+              <StackPanel.OpacityTransition>
+                <ScalarTransition Duration="0:0:0.35" />
+              </StackPanel.OpacityTransition>
+              <TextBlock Style="{StaticResource CaptionTextStyle}" Text="{x:Bind Model.Pane2Caption, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+              <TextBlock FontSize="16" FontWeight="SemiBold" LineHeight="22" Text="{x:Bind Model.Pane2Value, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </Button>
+
+      <!-- Always takes its space, so nothing shifts when it shows. -->
+      <ToggleButton x:Name="PinButton"
+          Grid.Column="1"
+          VerticalAlignment="Center"
+          AutomationProperties.Name="{x:Bind PinName(Model.PanePinned), Mode=OneWay}"
+          Click="PinButton_Click"
+          GotFocus="PinButton_FocusChanged"
+          LostFocus="PinButton_FocusChanged"
+          Opacity="0"
+          Style="{StaticResource PinToggleStyle}"
+          ToolTipService.ToolTip="{x:Bind PinName(Model.PanePinned), Mode=OneWay}">
+        <ToggleButton.OpacityTransition>
+          <ScalarTransition Duration="0:0:0.15" />
+        </ToggleButton.OpacityTransition>
+      </ToggleButton>
+    </Grid>
+  </Grid>
+</UserControl>

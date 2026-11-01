@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.0.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusyMouse.WinUI", "BusyMouse.WinUI\BusyMouse.WinUI.csproj", "{02456737-FF0B-49AE-88F8-18CFEC5031F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusyMouse.Core", "BusyMouse.Core\BusyMouse.Core.csproj", "{10182076-F853-496D-BA8E-BAB6241C1148}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10182076-F853-496D-BA8E-BAB6241C1148}.Debug|x64.ActiveCfg = Debug|x64
+		{10182076-F853-496D-BA8E-BAB6241C1148}.Debug|x64.Build.0 = Debug|x64
+		{10182076-F853-496D-BA8E-BAB6241C1148}.Release|x64.ActiveCfg = Release|x64
+		{10182076-F853-496D-BA8E-BAB6241C1148}.Release|x64.Build.0 = Release|x64
+		{02456737-FF0B-49AE-88F8-18CFEC5031F1}.Debug|x64.ActiveCfg = Debug|x64
+		{02456737-FF0B-49AE-88F8-18CFEC5031F1}.Debug|x64.Build.0 = Debug|x64
+		{02456737-FF0B-49AE-88F8-18CFEC5031F1}.Release|x64.ActiveCfg = Release|x64
+		{02456737-FF0B-49AE-88F8-18CFEC5031F1}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+EndGlobal

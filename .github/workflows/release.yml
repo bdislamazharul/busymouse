@@ -1,0 +1,66 @@
+# Builds every BusyMouse download and publishes a GitHub Release when a version tag is pushed:
+#   git tag v1.0.0
+#   git push origin v1.0.0
+# It can also be run by hand from the Actions tab (Run workflow); then the files are kept as a build artifact
+# instead of a release.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+
+      - name: Work out the version
+        id: version
+        shell: pwsh
+        run: |
+          $v = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '' }
+          "value=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Package x64
+        shell: pwsh
+        run: ./tools/package.ps1 -Platform x64 -Version '${{ steps.version.outputs.value }}'
+
+      - name: Package ARM64
+        shell: pwsh
+        run: ./tools/package.ps1 -Platform ARM64 -Version '${{ steps.version.outputs.value }}'
+
+      - name: Check every download was built
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem dist -File
+          $files | Format-Table Name, @{ n = 'MB'; e = { [math]::Round($_.Length / 1MB, 1) } } -AutoSize
+          if ($files.Count -ne 8) { throw "Expected 8 files in dist, found $($files.Count)." }
+
+      - name: Keep the files (manual runs)
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: BusyMouse
+          path: dist/*
+
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true

@@ -1,0 +1,96 @@
+<Window
+    x:Class="BusyMouse.WinUI.FlyoutWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:BusyMouse.WinUI.Controls"
+    Title="BusyMouse">
+
+  <Grid x:Name="Root" KeyDown="Root_KeyDown">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="48" />
+    </Grid.RowDefinitions>
+
+    <!-- Stands in for the backdrop while transparency effects are off. -->
+    <Border x:Name="Solid" Grid.RowSpan="2" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" Visibility="Collapsed" />
+
+    <StackPanel x:Name="Body" Padding="16" Spacing="12">
+      <ctl:StatusHeader />
+
+      <!-- The mode and how long to keep awake, folded away until More in the footer opens them. -->
+      <StackPanel x:Name="MoreOptions" Spacing="12" Visibility="Collapsed">
+        <Grid AutomationProperties.Name="Mode" ColumnSpacing="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <ToggleButton x:Name="DefaultTile"
+              AutomationProperties.Name="Default"
+              Click="ModeTile_Click"
+              PointerEntered="ModeTile_PointerEntered"
+              PointerExited="ModeTile_PointerExited"
+              Style="{StaticResource FlyoutTileToggleStyle}"
+              Tag="Default"
+              ToolTipService.ToolTip="Moves the pointer side to side along a short line">
+            <ctl:ModePreview Width="40" Height="40" Compact="True" Look="{x:Bind Model.CursorLook, Mode=OneWay}" Movement="{x:Bind Model.CursorMotion, Mode=OneWay}" Mode="Default" />
+          </ToggleButton>
+          <ToggleButton x:Name="DiagonalTile"
+              Grid.Column="1"
+              AutomationProperties.Name="Diagonal"
+              Click="ModeTile_Click"
+              PointerEntered="ModeTile_PointerEntered"
+              PointerExited="ModeTile_PointerExited"
+              Style="{StaticResource FlyoutTileToggleStyle}"
+              Tag="Diagonal"
+              ToolTipService.ToolTip="Moves the pointer a little and straight back. Distance sets how far">
+            <ctl:ModePreview Width="40" Height="40" Compact="True" Look="{x:Bind Model.CursorLook, Mode=OneWay}" Movement="{x:Bind Model.CursorMotion, Mode=OneWay}" Mode="Diagonal" />
+          </ToggleButton>
+          <ToggleButton x:Name="QuietTile"
+              Grid.Column="2"
+              AutomationProperties.Name="Quiet"
+              Click="ModeTile_Click"
+              PointerEntered="ModeTile_PointerEntered"
+              PointerExited="ModeTile_PointerExited"
+              Style="{StaticResource FlyoutTileToggleStyle}"
+              Tag="Quiet"
+              ToolTipService.ToolTip="Keeps the PC awake without moving the pointer you can see">
+            <ctl:ModePreview Width="40" Height="40" Compact="True" Look="{x:Bind Model.CursorLook, Mode=OneWay}" Movement="{x:Bind Model.CursorMotion, Mode=OneWay}" Mode="Quiet" />
+          </ToggleButton>
+          <ToggleButton x:Name="OrbitTile"
+              Grid.Column="3"
+              AutomationProperties.Name="Orbit"
+              Click="ModeTile_Click"
+              PointerEntered="ModeTile_PointerEntered"
+              PointerExited="ModeTile_PointerExited"
+              Style="{StaticResource FlyoutTileToggleStyle}"
+              Tag="Orbit"
+              ToolTipService.ToolTip="Moves the pointer around a tiny circle">
+            <ctl:ModePreview Width="40" Height="40" Compact="True" Look="{x:Bind Model.CursorLook, Mode=OneWay}" Movement="{x:Bind Model.CursorMotion, Mode=OneWay}" Mode="Orbit" />
+          </ToggleButton>
+        </Grid>
+
+        <ctl:TimeLimitPicker x:Name="LimitPicker" ListAbove="True" />
+      </StackPanel>
+    </StackPanel>
+
+    <Grid Grid.Row="1"
+        Padding="8,0"
+        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+        BorderThickness="0,1,0,0">
+      <Button Height="32"
+          Click="Open_Click"
+          FontSize="12"
+          Style="{StaticResource SubtleButtonStyle}"
+          ToolTipService.ToolTip="Open the full window with all settings">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <ctl:StrokeIcon Data="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V11M12 4h4v4M16 4l-6.5 6.5" StrokeThickness="1.4" />
+          <TextBlock Text="Open BusyMouse" />
+        </StackPanel>
+      </Button>
+      <ctl:MoreButton x:Name="MoreButton" Folds="{x:Bind MoreOptions}" OpensUp="True" ToolTipService.ToolTip="Mode, and how long to keep awake" />
+    </Grid>
+  </Grid>
+</Window>

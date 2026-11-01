@@ -1,0 +1,593 @@
+<Window
+    x:Class="BusyMouse.WinUI.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:BusyMouse.WinUI.Controls"
+    Title="BusyMouse">
+
+  <Grid x:Name="Root">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="32" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="40" />
+    </Grid.RowDefinitions>
+
+    <!-- Stands in for the backdrop while transparency effects are off. -->
+    <Border x:Name="Solid" Grid.RowSpan="3" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}" Visibility="Collapsed" />
+
+    <!-- Title bar: the app draws its own Minimize to tray, Minimize and Exit; there's nothing to maximize. -->
+    <Grid x:Name="TitleBar" Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <!-- The critter from the app icon, open-eyed, without its tile, in the title's colour. -->
+      <Viewbox x:Name="TitleIcon" Width="16" Height="16" Margin="12,0,8,0">
+        <Canvas Width="24" Height="24">
+          <Path Data="M5.94,10.8 A3.8,3.8 0 1 1 9.47,8.3 M14.53,8.3 A3.8,3.8 0 1 1 18.06,10.8"
+              Stroke="{ThemeResource TextFillColorPrimaryBrush}"
+              StrokeEndLineCap="Round"
+              StrokeStartLineCap="Round"
+              StrokeThickness="2" />
+          <Ellipse Canvas.Left="4.8" Canvas.Top="7.9" Width="14.4" Height="12.6" Stroke="{ThemeResource TextFillColorPrimaryBrush}" StrokeThickness="2" />
+          <Ellipse Canvas.Left="8.35" Canvas.Top="11.65" Width="2.5" Height="2.5" Fill="{ThemeResource TextFillColorPrimaryBrush}" />
+          <Ellipse Canvas.Left="13.15" Canvas.Top="11.65" Width="2.5" Height="2.5" Fill="{ThemeResource TextFillColorPrimaryBrush}" />
+          <Ellipse Canvas.Left="11.1" Canvas.Top="15.5" Width="1.8" Height="1.8" Fill="{ThemeResource TextFillColorPrimaryBrush}" />
+        </Canvas>
+      </Viewbox>
+      <TextBlock x:Name="TitleText" Grid.Column="1" VerticalAlignment="Center" FontSize="12" Text="BusyMouse" />
+      <Button x:Name="TrayButton"
+          Grid.Column="2"
+          AutomationProperties.Name="Minimize to tray"
+          Click="HideToTray_Click"
+          Style="{StaticResource CaptionButtonStyle}"
+          ToolTipService.ToolTip="Minimize to tray. BusyMouse keeps running in the notification area">
+        <!-- Sunrise's off drawing: the sun going down below the horizon, an arrow pointing it on its way; with a
+             bigger sun and the arrow standing clear of it, so the two don't run together this small. While
+             pointed at, it sinks a little further. -->
+        <Grid Width="16" Height="16">
+          <Grid>
+            <Grid.Clip>
+              <RectangleGeometry Rect="0,0,16,12.55" />
+            </Grid.Clip>
+            <ctl:StrokeIcon x:Name="TraySun" Data="M5.5 16.5A4.5 4.5 0 0 1 14.5 16.5M10 2.5V8.5M7.25 5.75L10 8.5L12.75 5.75" StrokeThickness="1.6">
+              <ctl:StrokeIcon.TranslationTransition>
+                <Vector3Transition Duration="0:0:0.18" />
+              </ctl:StrokeIcon.TranslationTransition>
+            </ctl:StrokeIcon>
+          </Grid>
+          <ctl:StrokeIcon Data="M1.5 16.5H18.5" StrokeThickness="1.6" />
+        </Grid>
+      </Button>
+      <Button x:Name="MinimizeButton"
+          Grid.Column="3"
+          AutomationProperties.Name="Minimize"
+          Click="MinimizeButton_Click"
+          Style="{StaticResource CaptionButtonStyle}"
+          ToolTipService.ToolTip="Minimize">
+        <FontIcon FontSize="10" Glyph="&#xE921;" />
+      </Button>
+      <Button x:Name="ExitButton"
+          Grid.Column="4"
+          AutomationProperties.Name="Close"
+          Click="ExitButton_Click"
+          Style="{StaticResource CloseCaptionButtonStyle}"
+          ToolTipService.ToolTip="Close">
+        <FontIcon FontSize="10" Glyph="&#xE8BB;" />
+      </Button>
+    </Grid>
+
+    <!-- Main page -->
+    <StackPanel x:Name="MainPage" Grid.Row="1" Padding="16,12,16,16" VerticalAlignment="Top" Spacing="12">
+      <ctl:StatusHeader />
+
+      <Grid Height="88" ColumnSpacing="12">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="88" />
+        </Grid.ColumnDefinitions>
+        <Grid AutomationProperties.Name="Mode" ColumnSpacing="8" RowSpacing="8">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <ToggleButton x:Name="DefaultTile" Click="ModeTile_Click" Style="{StaticResource TileToggleStyle}" ToolTipService.ToolTip="Moves the pointer side to side along a short line">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <ctl:StrokeIcon Width="18" Height="18" Data="M3 10h14M6 7l-3 3l3 3M14 7l3 3l-3 3" StrokeThickness="1.6" />
+              <TextBlock Text="Default" />
+            </StackPanel>
+          </ToggleButton>
+          <ToggleButton x:Name="DiagonalTile" Grid.Column="1" Click="ModeTile_Click" Style="{StaticResource TileToggleStyle}" ToolTipService.ToolTip="Moves the pointer a little and straight back. Distance sets how far">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <ctl:StrokeIcon Width="18" Height="18" Data="M15 15L5 5M15 10v5h-5M10 5H5v5" StrokeThickness="1.6" />
+              <TextBlock Text="Diagonal" />
+            </StackPanel>
+          </ToggleButton>
+          <ToggleButton x:Name="QuietTile" Grid.Row="1" Click="ModeTile_Click" Style="{StaticResource TileToggleStyle}" ToolTipService.ToolTip="Keeps the PC awake without moving the pointer you can see">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <ctl:StrokeIcon Width="18" Height="18" Data="M10 3v3M10 14v3M3 10h3M14 10h3M11.5 10a1.5 1.5 0 1 1-3 0a1.5 1.5 0 1 1 3 0" StrokeThickness="1.6" />
+              <TextBlock Text="Quiet" />
+            </StackPanel>
+          </ToggleButton>
+          <ToggleButton x:Name="OrbitTile" Grid.Row="1" Grid.Column="1" Click="ModeTile_Click" Style="{StaticResource TileToggleStyle}" ToolTipService.ToolTip="Moves the pointer around a tiny circle">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <ctl:StrokeIcon Width="18" Height="18" Data="M15.2 7A6 6 0 1 1 10 4M7.5 1.5l2.5 2.5l-2.5 2.5" StrokeThickness="1.6" />
+              <TextBlock Text="Orbit" />
+            </StackPanel>
+          </ToggleButton>
+        </Grid>
+        <Border Grid.Column="1"
+            Style="{StaticResource CardStyle}"
+            ToolTipService.ToolTip="Preview of the selected mode. It moves while BusyMouse is on">
+          <ctl:ModePreview x:Name="Preview"
+              Look="{x:Bind Model.CursorLook, Mode=OneWay}"
+              Movement="{x:Bind Model.CursorMotion, Mode=OneWay}"
+              Mode="{x:Bind Model.Mode, Mode=OneWay}" />
+        </Border>
+      </Grid>
+
+      <ctl:TimeLimitPicker x:Name="LimitPicker" />
+
+      <!-- The rest of the settings, folded away until More in the footer opens them. -->
+      <StackPanel x:Name="MoreOptions" Spacing="12" Visibility="Collapsed">
+        <Border Style="{StaticResource CardStyle}">
+          <StackPanel>
+            <Grid Style="{StaticResource CardRowStyle}" ToolTipService.ToolTip="How far each nudge moves the pointer, from 1 to 120 pixels">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="92" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="48" />
+              </Grid.ColumnDefinitions>
+              <TextBlock x:Name="DistanceLabel" VerticalAlignment="Center" Text="Distance" />
+              <!-- Log scale; Maximum is KeeperViewModel.DistanceSteps. -->
+              <Slider Grid.Column="1"
+                  VerticalAlignment="Center"
+                  AutomationProperties.LabeledBy="{x:Bind DistanceLabel}"
+                  IsThumbToolTipEnabled="False"
+                  LargeChange="100"
+                  Maximum="1000"
+                  Minimum="0"
+                  PreviewKeyDown="DistanceSlider_PreviewKeyDown"
+                  StepFrequency="1"
+                  Value="{x:Bind Model.DistancePosition, Mode=TwoWay}" />
+              <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Text="{x:Bind Model.DistanceText, Mode=OneWay}" />
+            </Grid>
+            <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <Grid Style="{StaticResource CardRowStyle}" ToolTipService.ToolTip="How long to wait between nudges, from 1 second to 3 hours">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="92" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="48" />
+              </Grid.ColumnDefinitions>
+              <TextBlock x:Name="IntervalLabel" VerticalAlignment="Center" Text="Nudge every" />
+              <Slider x:Name="IntervalSlider"
+                  Grid.Column="1"
+                  VerticalAlignment="Center"
+                  AutomationProperties.LabeledBy="{x:Bind IntervalLabel}"
+                  IsThumbToolTipEnabled="False"
+                  Maximum="16"
+                  Minimum="0"
+                  StepFrequency="1"
+                  Value="{x:Bind Model.IntervalStep, Mode=TwoWay}" />
+              <TextBlock Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Text="{x:Bind Model.IntervalText, Mode=OneWay}" />
+            </Grid>
+            <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <Grid Style="{StaticResource CardRowStyle}" ToolTipService.ToolTip="Waits a random time before each nudge, from 1 second up to the interval">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock x:Name="RandomLabel" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                <Run Text="Random delay" />
+                <Run FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text=" 1 s up to the interval" />
+              </TextBlock>
+              <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Random delay" IsOn="{x:Bind Model.RandomDelay, Mode=TwoWay}" Style="{StaticResource BareToggleSwitchStyle}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource CardStyle}">
+          <StackPanel>
+            <Grid Style="{StaticResource CardRowStyle}" ToolTipService.ToolTip="Keeps nudging while Windows is locked. Off, it stops until you unlock">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock VerticalAlignment="Center" Text="Stay active when the PC is locked" />
+              <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Stay active when the PC is locked" IsOn="{x:Bind Model.StayActiveWhenLocked, Mode=TwoWay}" Style="{StaticResource BareToggleSwitchStyle}" />
+            </Grid>
+            <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <Grid Style="{StaticResource CardRowStyle}" ToolTipService.ToolTip="Opens only the tray icon, not this window, when the app starts">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock VerticalAlignment="Center" Text="Start in the tray" />
+              <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Start in the tray" IsOn="{x:Bind Model.StartInTray, Mode=TwoWay}" Style="{StaticResource BareToggleSwitchStyle}" />
+            </Grid>
+            <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+            <Grid Style="{StaticResource CardRowStyle}" ToolTipService.ToolTip="Starts keeping the PC awake as soon as the app opens">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <TextBlock VerticalAlignment="Center" Text="Keep awake when the app starts" />
+              <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Keep awake when the app starts" IsOn="{x:Bind Model.KeepAwakeOnStart, Mode=TwoWay}" Style="{StaticResource BareToggleSwitchStyle}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Settings page: the header stays put while the rest scrolls under it. -->
+    <Grid x:Name="SettingsPage" Grid.Row="1" Visibility="Collapsed">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <StackPanel Height="32" Margin="8,8,16,0" Orientation="Horizontal" Spacing="4">
+        <Button Width="32"
+            Height="32"
+            Padding="0"
+            HorizontalContentAlignment="Center"
+            AutomationProperties.Name="Back"
+            Click="SettingsBack_Click"
+            Style="{StaticResource SubtleButtonStyle}"
+            ToolTipService.ToolTip="Back">
+          <ctl:StrokeIcon Data="M16 10H4M9 5l-5 5l5 5" />
+        </Button>
+        <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="Settings" />
+      </StackPanel>
+
+      <ScrollViewer x:Name="SettingsScroll" Grid.Row="1">
+      <StackPanel Padding="16,12,16,16" Spacing="12">
+        <StackPanel Spacing="4">
+          <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Personalization" />
+          <Border Style="{StaticResource CardStyle}">
+            <StackPanel>
+              <Grid Style="{StaticResource SettingRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock x:Name="ThemeLabel" Text="App theme" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Light, dark, or by time of day" TextWrapping="Wrap" />
+                </StackPanel>
+                <ctl:DropDown Grid.Column="1"
+                    Width="172"
+                    VerticalAlignment="Center"
+                    AutomationProperties.LabeledBy="{x:Bind ThemeLabel}"
+                    SelectedIndex="{x:Bind Model.ThemeChoice, Mode=TwoWay}">
+                  <!-- In the order of AppTheme. -->
+                  <x:String>Light</x:String>
+                  <x:String>Dark</x:String>
+                  <x:String>By time of day</x:String>
+                  <x:String>Use system setting</x:String>
+                </ctl:DropDown>
+              </Grid>
+              <StackPanel Visibility="{x:Bind Model.IsScheduled, Mode=OneWay}">
+                <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                <Grid Height="48" Style="{StaticResource CardRowStyle}">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <TextBlock x:Name="LightFromLabel" VerticalAlignment="Center" Text="Light from" TextTrimming="CharacterEllipsis" />
+                  <TimePicker Grid.Column="1"
+                      VerticalAlignment="Center"
+                      AutomationProperties.LabeledBy="{x:Bind LightFromLabel}"
+                      MinuteIncrement="5"
+                      Time="{x:Bind Model.LightFrom, Mode=TwoWay}" />
+                </Grid>
+                <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                <Grid Height="48" Style="{StaticResource CardRowStyle}">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <TextBlock x:Name="DarkFromLabel" VerticalAlignment="Center" Text="Dark from" TextTrimming="CharacterEllipsis" />
+                  <TimePicker Grid.Column="1"
+                      VerticalAlignment="Center"
+                      AutomationProperties.LabeledBy="{x:Bind DarkFromLabel}"
+                      MinuteIncrement="5"
+                      Time="{x:Bind Model.DarkFrom, Mode=TwoWay}" />
+                </Grid>
+              </StackPanel>
+              <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+              <Grid Style="{StaticResource SettingRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="Transparency effects" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="The window shows a hint of what's behind it" TextWrapping="Wrap" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Transparency effects" IsOn="{x:Bind Model.Transparency, Mode=TwoWay}" Style="{StaticResource BareToggleSwitchStyle}" />
+              </Grid>
+              <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+              <Grid Style="{StaticResource SettingRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock x:Name="AccentLabel" Text="Accent color" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="For switches, sliders and highlights" TextWrapping="Wrap" />
+                </StackPanel>
+                <ctl:DropDown Grid.Column="1"
+                    Width="172"
+                    VerticalAlignment="Center"
+                    AutomationProperties.LabeledBy="{x:Bind AccentLabel}"
+                    SelectedIndex="{x:Bind Model.AccentChoice, Mode=TwoWay}">
+                  <x:String>Same as Windows</x:String>
+                  <x:String>Pick a color</x:String>
+                </ctl:DropDown>
+              </Grid>
+              <StackPanel Padding="12,0,12,12" Spacing="6" Visibility="{x:Bind Model.IsCustomAccent, Mode=OneWay}">
+                <StackPanel x:Name="RecentAccentsSection" Spacing="6">
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Recent colors" />
+                  <StackPanel x:Name="RecentAccentsPanel" Orientation="Horizontal" Spacing="4" />
+                </StackPanel>
+                <TextBlock Margin="0,4,0,0" Style="{StaticResource CaptionTextStyle}" Text="Windows colors" />
+                <Grid x:Name="PaletteGrid" HorizontalAlignment="Left" ColumnSpacing="4" RowSpacing="4" />
+                <Button Margin="0,6,0,0" AutomationProperties.Name="Custom color" Click="CustomColor_Click" FontSize="13">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <ctl:StrokeIcon Data="M10 4v12M4 10h12" StrokeThickness="1.4" />
+                    <TextBlock Text="Custom color" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
+              <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+              <Grid Style="{StaticResource SettingRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock x:Name="TrayIconLabel" Text="Tray icon" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Off and on, in the notification area" TextWrapping="Wrap" />
+                </StackPanel>
+                <!-- A to Z, in the order of TrayIcon. -->
+                <ctl:DropDown Grid.Column="1"
+                    Width="172"
+                    VerticalAlignment="Center"
+                    AutomationProperties.LabeledBy="{x:Bind TrayIconLabel}"
+                    SelectedIndex="{x:Bind Model.TrayIconChoice, Mode=TwoWay}">
+                  <DataTemplate>
+                    <StackPanel AutomationProperties.Name="Coffee" Orientation="Horizontal" Spacing="6">
+                      <ctl:StateGlyph Width="16" Height="16" Look="Coffee" />
+                      <ctl:StateGlyph Width="16" Height="16" IsOn="True" Look="Coffee" />
+                      <TextBlock Margin="4,0,0,0" Text="Coffee" />
+                    </StackPanel>
+                  </DataTemplate>
+                  <DataTemplate>
+                    <StackPanel AutomationProperties.Name="Doze" Orientation="Horizontal" Spacing="6">
+                      <ctl:StateGlyph Width="16" Height="16" Look="Doze" />
+                      <ctl:StateGlyph Width="16" Height="16" IsOn="True" Look="Doze" />
+                      <TextBlock Margin="4,0,0,0" Text="Doze" />
+                    </StackPanel>
+                  </DataTemplate>
+                  <DataTemplate>
+                    <StackPanel AutomationProperties.Name="Rise" Orientation="Horizontal" Spacing="6">
+                      <ctl:StateGlyph Width="16" Height="16" Look="Rise" />
+                      <ctl:StateGlyph Width="16" Height="16" IsOn="True" Look="Rise" />
+                      <TextBlock Margin="4,0,0,0" Text="Rise" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ctl:DropDown>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+          <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Mode preview" />
+          <Border Style="{StaticResource CardStyle}">
+            <Grid Padding="12" ColumnSpacing="12">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <StackPanel VerticalAlignment="Center" Spacing="10">
+                <StackPanel Spacing="4">
+                  <TextBlock x:Name="CursorLabel" Text="Cursor" />
+                  <!-- A to Z, in the order of CursorLook. -->
+                  <ctl:DropDown HorizontalAlignment="Stretch" AutomationProperties.LabeledBy="{x:Bind CursorLabel}" SelectedIndex="{x:Bind Model.CursorLookChoice, Mode=TwoWay}">
+                    <x:String>Bubble</x:String>
+                    <x:String>Comet</x:String>
+                    <x:String>Mouse arrow</x:String>
+                  </ctl:DropDown>
+                </StackPanel>
+                <StackPanel Spacing="4">
+                  <TextBlock x:Name="CursorMotionLabel" Text="Cursor motion" />
+                  <!-- A to Z, in the order of CursorMotion. -->
+                  <ctl:DropDown HorizontalAlignment="Stretch" AutomationProperties.LabeledBy="{x:Bind CursorMotionLabel}" SelectedIndex="{x:Bind Model.CursorMotionChoice, Mode=TwoWay}">
+                    <x:String>Comet</x:String>
+                    <x:String>Pointer</x:String>
+                    <x:String>Ripple</x:String>
+                    <x:String>True steps</x:String>
+                  </ctl:DropDown>
+                </StackPanel>
+              </StackPanel>
+              <Border Grid.Column="1"
+                  Width="120"
+                  Height="120"
+                  Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                  BorderThickness="1"
+                  CornerRadius="6"
+                  ToolTipService.ToolTip="The selected mode, as the previews will show it">
+                <ctl:ModePreview x:Name="SettingsPreview"
+                    Look="{x:Bind Model.CursorLook, Mode=OneWay}"
+                    Movement="{x:Bind Model.CursorMotion, Mode=OneWay}"
+                    Mode="{x:Bind Model.Mode, Mode=OneWay}"
+                    Tone="Active" />
+              </Border>
+            </Grid>
+          </Border>
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+          <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Startup and closing" />
+          <Border Style="{StaticResource CardStyle}">
+            <StackPanel>
+              <Grid Style="{StaticResource SettingRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock Text="Start with Windows" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Opens in the tray when you sign in" TextWrapping="Wrap" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" AutomationProperties.Name="Start with Windows" IsOn="{x:Bind Model.StartWithWindows, Mode=TwoWay}" Style="{StaticResource BareToggleSwitchStyle}" />
+              </Grid>
+              <Rectangle Height="1" Fill="{ThemeResource DividerStrokeColorDefaultBrush}" />
+              <Grid Style="{StaticResource SettingRowStyle}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                  <TextBlock x:Name="CloseLabel" Text="Close button" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="What closing the window does" TextWrapping="Wrap" />
+                </StackPanel>
+                <ctl:DropDown Grid.Column="1"
+                    Width="172"
+                    VerticalAlignment="Center"
+                    AutomationProperties.LabeledBy="{x:Bind CloseLabel}"
+                    SelectedIndex="{x:Bind Model.CloseChoice, Mode=TwoWay}">
+                  <!-- In the order of CloseAction. -->
+                  <x:String>Ask every time</x:String>
+                  <x:String>Minimize to tray</x:String>
+                  <x:String>Exit</x:String>
+                </ctl:DropDown>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </StackPanel>
+      </ScrollViewer>
+    </Grid>
+
+    <!-- About page, with a header that stays put too -->
+    <Grid x:Name="AboutPage" Grid.Row="1" Visibility="Collapsed">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <StackPanel Height="32" Margin="8,8,16,0" Orientation="Horizontal" Spacing="4">
+        <Button Width="32"
+            Height="32"
+            Padding="0"
+            HorizontalContentAlignment="Center"
+            AutomationProperties.Name="Back"
+            Click="AboutBack_Click"
+            Style="{StaticResource SubtleButtonStyle}"
+            ToolTipService.ToolTip="Back">
+          <ctl:StrokeIcon Data="M16 10H4M9 5l-5 5l5 5" />
+        </Button>
+        <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Text="About" />
+      </StackPanel>
+
+      <ScrollViewer x:Name="AboutScroll" Grid.Row="1">
+      <StackPanel Padding="16,12,16,16" Spacing="12">
+        <StackPanel>
+          <ctl:AppIcon x:Name="AboutIcon" Width="64" Height="64" HorizontalAlignment="Center" />
+          <TextBlock Margin="0,10,0,0" HorizontalAlignment="Center" FontSize="20" FontWeight="SemiBold" Text="BusyMouse" />
+          <StackPanel Margin="0,2,0,0" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="6">
+            <Grid>
+              <Border Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Opacity="0.14" />
+              <TextBlock x:Name="VersionText" Margin="8,2" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+            </Grid>
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource CaptionTextStyle}" Text="WinUI 3 · .NET 10" />
+          </StackPanel>
+          <TextBlock Margin="0,6,0,0" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="Keeps your PC awake by gently nudging the pointer." TextAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+          <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Credits" />
+          <Border CornerRadius="8" Style="{StaticResource CardStyle}">
+            <StackPanel>
+              <Grid Height="48" Padding="12,0" ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Width="32" Height="32" Background="{ThemeResource AvatarOneBackground}" CornerRadius="16">
+                  <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" FontWeight="SemiBold" Foreground="{ThemeResource AvatarOneForeground}" Text="AI" />
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                  <TextBlock LineHeight="18" Text="Azharul Islam" />
+                  <TextBlock Style="{StaticResource CaptionTextStyle}" Text="Author" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <Button HorizontalAlignment="Stretch" Click="License_Click" FontSize="13">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <ctl:StrokeIcon Data="M6 2.5h5.5L15 6v10.5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-13a1 1 0 0 1 1-1zM11 2.5V6h4M7.5 10h5M7.5 13h5" StrokeThickness="1.4" />
+            <TextBlock Text="License · MIT" />
+          </StackPanel>
+        </Button>
+
+        <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+          <Expander.Header>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <ctl:StrokeIcon Data="M3.5 4.5h13v11h-13zM6.5 8l2 2l-2 2M10.5 12h3" StrokeThickness="1.4" />
+              <TextBlock Text="Command-line options" />
+            </StackPanel>
+          </Expander.Header>
+          <Grid x:Name="OptionsGrid" ColumnSpacing="12" RowSpacing="6" />
+        </Expander>
+
+        <TextBlock x:Name="CopyrightText" HorizontalAlignment="Center" Style="{StaticResource CaptionTextStyle}" />
+      </StackPanel>
+      </ScrollViewer>
+    </Grid>
+
+    <!-- Footer -->
+    <Grid Grid.Row="2"
+        Padding="8,0"
+        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+        BorderThickness="0,1,0,0">
+      <Button x:Name="MenuButton"
+          Width="32"
+          Height="32"
+          Padding="0"
+          HorizontalContentAlignment="Center"
+          AutomationProperties.Name="Menu"
+          Style="{StaticResource SubtleButtonStyle}"
+          ToolTipService.ToolTip="About and Settings">
+        <ctl:StrokeIcon Data="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" StrokeThickness="1.3" />
+        <Button.Flyout>
+          <MenuFlyout Placement="TopEdgeAlignedLeft">
+            <MenuFlyoutItem Click="OpenAbout_Click" Text="About">
+              <MenuFlyoutItem.Icon>
+                <FontIcon Glyph="&#xE946;" />
+              </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Click="OpenSettings_Click" Text="Settings">
+              <MenuFlyoutItem.Icon>
+                <FontIcon Glyph="&#xE713;" />
+              </MenuFlyoutItem.Icon>
+            </MenuFlyoutItem>
+          </MenuFlyout>
+        </Button.Flyout>
+      </Button>
+      <ctl:MoreButton x:Name="MoreButton" Folds="{x:Bind MoreOptions}" Toggled="MoreButton_Toggled" ToolTipService.ToolTip="Distance, how often to nudge, and startup" />
+    </Grid>
+  </Grid>
+</Window>
