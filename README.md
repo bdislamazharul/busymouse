@@ -6,6 +6,21 @@ showing you as available.
 BusyMouse lives in the tray. Turn it on or off from the tray menu, the main window, or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd>.
 When you're already using the mouse yourself, it stays out of the way and skips the nudge.
 
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/main-light.png" width="300" alt="BusyMouse main window, light theme"></td>
+    <td align="center"><img src="docs/screenshots/main-dark.png" width="300" alt="BusyMouse main window, dark theme"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/flyout.png" width="340" alt="Tray flyout"></td>
+    <td align="center"><img src="docs/screenshots/tray-menu.png" width="340" alt="Tray menu"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/settings.png" width="300" alt="Settings: theme, light and dark hours, accent color (dark theme)"></td>
+    <td align="center"><img src="docs/screenshots/settings2.png" width="300" alt="Settings: tray icon, mode preview, startup"></td>
+  </tr>
+</table>
+
 ## Download
 
 With [winget](https://learn.microsoft.com/windows/package-manager/winget/):
