@@ -16,13 +16,13 @@
   IgnorableNamespaces="uap uap5 desktop rescap">
 
   <Identity
-    Name="REPLACE.WITH.PARTNER.CENTER.PACKAGE.NAME"
-    Publisher="CN=REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID"
+    Name="azh.BusyMouse"
+    Publisher="CN=00E69E54-30B9-478E-AC54-1FE042FF9C58"
     Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>BusyMouse</DisplayName>
-    <PublisherDisplayName>Azharul Islam</PublisherDisplayName>
+    <PublisherDisplayName>azh</PublisherDisplayName>
     <Logo>Assets\Store\StoreLogo.png</Logo>
   </Properties>
 

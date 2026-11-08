@@ -105,6 +105,10 @@ copy the package identity from Partner Center (Product management > Product iden
 | `installer` | Inno Setup script for both installers. |
 | `tools` | Packaging script and icon generator. |
 
+## Privacy
+
+BusyMouse collects nothing and makes no network connections. See the [privacy policy](PRIVACY.md).
+
 ## License
 
 [MIT](LICENSE.txt) © 2026 Azharul Islam
