@@ -11,7 +11,7 @@ When you're already using the mouse yourself, it stays out of the way and skips 
 With [winget](https://learn.microsoft.com/windows/package-manager/winget/):
 
 ```
-winget install AzharulIslam.BusyMouse
+winget install azh.busymouse
 ```
 
 Or get it from the Microsoft Store, or download the latest version from

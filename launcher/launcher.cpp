@@ -127,7 +127,7 @@ namespace
 
     HRESULT STDMETHODCALLTYPE OnProgress (ULONG done, ULONG total, ULONG, LPCWSTR) override
     {
-      if (this->dialog->HasUserCancelledOperation ())
+      if (this->dialog->HasUserCancelled ())
         return E_ABORT;
 
       if (total > 0)
@@ -172,7 +172,7 @@ namespace
     Progress progress (dialog);
     HRESULT hr = URLDownloadToFileW (nullptr, RuntimeUrl ().c_str (), file.c_str (), 0, &progress);
 
-    cancelled = hr == E_ABORT || dialog->HasUserCancelledOperation ();
+    cancelled = hr == E_ABORT || dialog->HasUserCancelled ();
     dialog->StopProgressDialog ();
     dialog->Release ();
 
