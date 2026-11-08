@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The Microsoft Store (MSIX) package. Only used by the Store build: tools\package-store.ps1.
+  The other downloads are unpackaged (WindowsPackageType None) and ignore this file.
+
+  Identity Name and Publisher, and PublisherDisplayName, must match Partner Center exactly:
+  Apps and games > BusyMouse > Product management > Product identity.
+  Version is set by tools\package-store.ps1; the Store needs the last part to be 0.
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 desktop rescap">
+
+  <Identity
+    Name="REPLACE.WITH.PARTNER.CENTER.PACKAGE.NAME"
+    Publisher="CN=REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID"
+    Version="1.0.0.0" />
+
+  <Properties>
+    <DisplayName>BusyMouse</DisplayName>
+    <PublisherDisplayName>Azharul Islam</PublisherDisplayName>
+    <Logo>Assets\Store\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+      <uap:VisualElements
+        DisplayName="BusyMouse"
+        Description="Keeps your PC awake by gently nudging the pointer."
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Store\Square150x150Logo.png"
+        Square44x44Logo="Assets\Store\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Store\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Assets\Store\SplashScreen.png" />
+      </uap:VisualElements>
+
+      <Extensions>
+        <!-- "Start with Windows": MSIX apps can't use the Run registry key, so Autostart.cs switches this on instead. -->
+        <desktop:Extension Category="windows.startupTask" Executable="BusyMouse.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="BusyMouseStartup" Enabled="false" DisplayName="BusyMouse" />
+        </desktop:Extension>
+
+        <!-- So "BusyMouse" and its command-line options, such as stop-nudging, still work from a terminal. -->
+        <uap5:Extension Category="windows.appExecutionAlias" Executable="BusyMouse.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="BusyMouse.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

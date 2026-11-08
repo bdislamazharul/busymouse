@@ -30,6 +30,9 @@ public static class Program
       return 1;
     }
 
+    if (Native.IsPackaged && LaunchedByStartupTask ())
+      options.StartedAtSignIn ();
+
     if (options.Help)
     {
       Report (StartupOptions.HelpText, false);
@@ -87,6 +90,22 @@ public static class Program
     }
 
     return 0;
+  }
+
+  /// <summary>
+  /// Whether Windows started the Store package at sign-in, through its startup task.
+  /// </summary>
+  private static bool LaunchedByStartupTask ()
+  {
+    try
+    {
+      return Windows.ApplicationModel.AppInstance.GetActivatedEventArgs ()?.Kind == Windows.ApplicationModel.Activation.ActivationKind.StartupTask;
+    }
+    catch (Exception)
+    {
+      // Not available on this Windows version: start as usual.
+      return false;
+    }
   }
 
   private static bool Signal (string name)

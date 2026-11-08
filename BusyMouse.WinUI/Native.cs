@@ -137,6 +137,23 @@ internal static unsafe partial class Native
     public Guid guidItem;
   }
 
+  private const int APPMODEL_ERROR_NO_PACKAGE = 15700;
+
+  [LibraryImport ("kernel32.dll")]
+  private static partial int GetCurrentPackageFullName (ref uint length, char* name);
+
+  /// <summary>
+  /// True when running from the Microsoft Store (MSIX) package rather than the installer or a zip.
+  /// </summary>
+  public static readonly bool IsPackaged = IsRunningPackaged ();
+
+  private static bool IsRunningPackaged ()
+  {
+    uint length = 0;
+
+    return GetCurrentPackageFullName (ref length, null) != APPMODEL_ERROR_NO_PACKAGE;
+  }
+
   [LibraryImport ("user32.dll", SetLastError = true)]
   public static partial ushort RegisterClassExW (WNDCLASSEXW* wndClass);
 

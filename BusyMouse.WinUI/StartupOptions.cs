@@ -47,6 +47,12 @@ internal sealed class StartupOptions
   public bool Help { get; private set; }
 
   /// <summary>
+  /// Windows started the app at sign-in through the Store package's startup task, which can't pass "-m" the way
+  /// the Run key does: start in the tray unless the command line said otherwise.
+  /// </summary>
+  public void StartedAtSignIn () => this.Minimized ??= true;
+
+  /// <summary>
   /// Reads the arguments. Accepts "-s 30", "--seconds 30" and "--seconds=30"; switches take an optional
   /// true or false, as in "-r false".
   /// </summary>

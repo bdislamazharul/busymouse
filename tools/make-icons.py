@@ -380,7 +380,7 @@ def to_bgra(pixels):
 
 
 def png(pixels):
-    size = len(pixels)
+    height, width = len(pixels), len(pixels[0])
     raw = bytearray()
     for row in pixels:
         raw.append(0)
@@ -390,7 +390,7 @@ def png(pixels):
     def chunk(kind, data):
         return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
 
-    ihdr = struct.pack(">IIBBBBB", size, size, 8, 6, 0, 0, 0)
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
     return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", zlib.compress(bytes(raw), 9)) + chunk(b"IEND", b"")
 
 
@@ -422,6 +422,41 @@ def write_ico(name, images):
 TRAY_STYLES = ("Coffee", "Doze", "Rise")
 
 
+def centred(icon, width, height):
+    """The icon in the middle of a transparent width x height image."""
+    side = len(icon)
+    left, top = (width - side) // 2, (height - side) // 2
+    blank = (0, 0, 0, 0)
+    return [[icon[j - top][i - left] if 0 <= i - left < side and 0 <= j - top < side else blank
+             for i in range(width)] for j in range(height)]
+
+
+# The Microsoft Store (MSIX) package's tiles: (file name, width, height, icon size), at 100% and 200% scale.
+STORE_IMAGES = [
+    ("Square150x150Logo.scale-100", 150, 150, 100), ("Square150x150Logo.scale-200", 300, 300, 200),
+    ("Wide310x150Logo.scale-100", 310, 150, 100), ("Wide310x150Logo.scale-200", 620, 300, 200),
+    ("Square44x44Logo.scale-100", 44, 44, 36), ("Square44x44Logo.scale-200", 88, 88, 72),
+    ("StoreLogo.scale-100", 50, 50, 50), ("StoreLogo.scale-200", 100, 100, 100),
+    ("SplashScreen.scale-100", 620, 300, 200), ("SplashScreen.scale-200", 1240, 600, 400),
+] + [
+    # Taskbar and Start list icons, edge to edge, with and without the accent plate behind them.
+    (f"Square44x44Logo.targetsize-{s}{alt}", s, s, s)
+    for s in (16, 24, 32, 48, 256) for alt in ("", "_altform-unplated")
+]
+
+
+def write_store_images():
+    folder = os.path.join(OUT, "Store")
+    os.makedirs(folder, exist_ok=True)
+    icons = {}
+    for name, width, height, side in STORE_IMAGES:
+        if side not in icons:
+            icons[side] = app_icon(side)
+        with open(os.path.join(folder, name + ".png"), "wb") as f:
+            f.write(png(centred(icons[side], width, height)))
+        print(f"Store/{name}.png")
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     tray_sizes = (16, 20, 24, 32, 40, 48)
@@ -435,6 +470,7 @@ def main():
                 print(name)
     write_ico("BusyMouse.ico", [app_icon(s) for s in (16, 20, 24, 32, 40, 48, 64, 256)])
     print("BusyMouse.ico")
+    write_store_images()
 
 
 if __name__ == "__main__":

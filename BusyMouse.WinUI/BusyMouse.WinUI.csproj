@@ -15,7 +15,8 @@
     <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
     <RuntimeIdentifier Condition="'$(Platform)' != 'ARM64'">win-x64</RuntimeIdentifier>
     <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
-    <WindowsPackageType>None</WindowsPackageType>
+    <!-- Unpackaged: the installers and zips. The Store build (Properties\PublishProfiles\Store.pubxml) makes it MSIX. -->
+    <WindowsPackageType Condition="'$(WindowsPackageType)' == ''">None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <!-- Program.cs owns Main: it parses the command line and enforces a single instance before XAML starts. -->
@@ -34,6 +35,8 @@
 
   <ItemGroup>
     <Content Include="Assets\*.ico" CopyToOutputDirectory="PreserveNewest" />
+    <!-- The Store package's tiles, drawn by tools\make-icons.py. -->
+    <Content Include="Assets\Store\*.png" Condition="'$(WindowsPackageType)' == 'MSIX'" />
     <!-- The license goes wherever the app does; About opens it. -->
     <Content Include="..\LICENSE.txt" Link="LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

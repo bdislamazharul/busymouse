@@ -8,7 +8,14 @@ When you're already using the mouse yourself, it stays out of the way and skips 
 
 ## Download
 
-Get the latest version from [Releases](https://github.com/bdislamazharul/busymouse/releases/latest).
+With [winget](https://learn.microsoft.com/windows/package-manager/winget/):
+
+```
+winget install AzharulIslam.BusyMouse
+```
+
+Or get it from the Microsoft Store, or download the latest version from
+[Releases](https://github.com/bdislamazharul/busymouse/releases/latest).
 
 | File | What it is |
 |---|---|
@@ -64,6 +71,16 @@ powershell -ExecutionPolicy Bypass -File tools\package.ps1 [-Platform ARM64] [-T
 
 Releases are built by GitHub Actions: pushing a tag such as `v1.0.0` builds everything for x64 and ARM64 and
 publishes a release.
+
+The Microsoft Store package (an unsigned `.msixbundle` for x64 and ARM64; the Store signs it) is built by:
+
+```
+powershell -ExecutionPolicy Bypass -File tools\package-store.ps1
+```
+
+The release workflow builds it too and keeps it as the `BusyMouse-store` artifact of the run. Before the first upload,
+copy the package identity from Partner Center (Product management > Product identity) into
+`BusyMouse.WinUI\Package.appxmanifest`.
 
 | Folder | What's in it |
 |---|---|

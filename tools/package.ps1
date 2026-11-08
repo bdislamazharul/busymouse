@@ -91,7 +91,7 @@ foreach ($f in $flavors) {
 # ---- installers
 Step 'Building installers'
 $iscc = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe", "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe") |
-  Where-Object { Test-Path $_ } | Select-Object -First 1 }
+  Where-Object { Test-Path $_ } | Select-Object -First 1
 
 if (-not $iscc) {
   Write-Warning 'Inno Setup 6 not found, so no installers. Install it with: winget install JRSoftware.InnoSetup'

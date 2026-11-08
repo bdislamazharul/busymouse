@@ -64,3 +64,17 @@ jobs:
         with:
           files: dist/*
           generate_release_notes: true
+
+      # The Microsoft Store package. Not part of the release: download it from the run's artifacts and upload it in
+      # Partner Center.
+      - name: Package for the Microsoft Store
+        shell: pwsh
+        run: |
+          Remove-Item dist -Recurse -Force
+          ./tools/package-store.ps1 -Version '${{ steps.version.outputs.value }}'
+
+      - name: Keep the Store package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BusyMouse-store
+          path: dist/*.msixbundle
