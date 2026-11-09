@@ -315,8 +315,10 @@ def gradient_at(t):
     return (*hex_rgb(GRADIENT[-1][1]), 1.0)
 
 
-def app_icon(size):
-    # Edge to edge, as big as the taskbar will show it.
+def app_icon(size, shape="squircle"):
+    """The app icon, edge to edge, as big as the taskbar will show it. shape: "squircle" (the icon), "square"
+    (the gradient fills every pixel, for places Windows draws on a coloured plate) or "none" (just the mouse,
+    on transparency, to lay over a gradient of another shape)."""
     pad = 0
     side = size
     c = size / 2
@@ -324,13 +326,15 @@ def app_icon(size):
     n = len(SQUIRCLE) - 1
 
     def tile(px, py):
+        if shape == "square":
+            return True
         u, v = abs(px - c) / half, abs(py - c) / half
         return u <= 1 and v <= SQUIRCLE[min(n, int(u * n))]
 
     def grad(px, py):
         return gradient_at((px + py - 2 * pad) / (2 * side))
 
-    shapes = [(tile, grad)]
+    shapes = [] if shape == "none" else [(tile, grad)]
 
     # The critter from the 24 grid, filled, with its ears a little bigger so it reads as a mouse rather than a
     # bear: ears r3.8 at (5.9, 7) and (18.1, 7), head 7.2 by 6.3 at (12, 14.2), eyes r1.1 at (9.6, 12.9) and
@@ -431,29 +435,59 @@ def centred(icon, width, height):
              for i in range(width)] for j in range(height)]
 
 
-# The Microsoft Store (MSIX) package's tiles: (file name, width, height, icon size), at 100% and 200% scale.
+def on_gradient(mouse, width, height):
+    """The mouse in the middle of a width x height image filled with the icon's gradient, every pixel opaque."""
+    side = len(mouse)
+    left, top = (width - side) // 2, (height - side) // 2
+    span = width + height
+    out = []
+    for j in range(height):
+        row = []
+        for i in range(width):
+            r, g, b, _ = gradient_at((i + j + 1) / span)
+            if 0 <= i - left < side and 0 <= j - top < side:
+                mr, mg, mb, ma = mouse[j - top][i - left]
+                r, g, b = mr * ma + r * (1 - ma), mg * ma + g * (1 - ma), mb * ma + b * (1 - ma)
+            row.append((r, g, b, 1.0))
+        out.append(row)
+    return out
+
+
+# The Microsoft Store (MSIX) package's images: (file name, width, height, icon size, look), at 100% and 200% scale.
+# Windows draws "plated" images on a square of the package's background colour (the accent colour, for
+# "transparent"), so those fill every pixel with the gradient and the plate never shows. The "unplated" small
+# icons, which Windows 11 uses on the taskbar and in Start, keep the squircle.
 STORE_IMAGES = [
-    ("Square150x150Logo.scale-100", 150, 150, 100), ("Square150x150Logo.scale-200", 300, 300, 200),
-    ("Wide310x150Logo.scale-100", 310, 150, 100), ("Wide310x150Logo.scale-200", 620, 300, 200),
-    ("Square44x44Logo.scale-100", 44, 44, 36), ("Square44x44Logo.scale-200", 88, 88, 72),
-    ("StoreLogo.scale-100", 50, 50, 50), ("StoreLogo.scale-200", 100, 100, 100),
-    ("SplashScreen.scale-100", 620, 300, 200), ("SplashScreen.scale-200", 1240, 600, 400),
+    ("Square150x150Logo.scale-100", 150, 150, 100, "plated"), ("Square150x150Logo.scale-200", 300, 300, 200, "plated"),
+    ("Wide310x150Logo.scale-100", 310, 150, 100, "plated"), ("Wide310x150Logo.scale-200", 620, 300, 200, "plated"),
+    ("Square44x44Logo.scale-100", 44, 44, 44, "plated"), ("Square44x44Logo.scale-200", 88, 88, 88, "plated"),
+    ("StoreLogo.scale-100", 50, 50, 50, "plated"), ("StoreLogo.scale-200", 100, 100, 100, "plated"),
+    ("SplashScreen.scale-100", 620, 300, 200, "plated"), ("SplashScreen.scale-200", 1240, 600, 400, "plated"),
 ] + [
-    # Taskbar and Start list icons, edge to edge, with and without the accent plate behind them.
-    (f"Square44x44Logo.targetsize-{s}{alt}", s, s, s)
-    for s in (16, 24, 32, 48, 256) for alt in ("", "_altform-unplated")
+    (f"Square44x44Logo.targetsize-{s}", s, s, s, "plated") for s in (16, 24, 32, 48, 256)
+] + [
+    (f"Square44x44Logo.targetsize-{s}_altform-unplated", s, s, s, "squircle") for s in (16, 24, 32, 48, 256)
 ]
 
 
 def write_store_images():
     folder = os.path.join(OUT, "Store")
     os.makedirs(folder, exist_ok=True)
-    icons = {}
-    for name, width, height, side in STORE_IMAGES:
-        if side not in icons:
-            icons[side] = app_icon(side)
+    cache = {}
+    for name, width, height, side, look in STORE_IMAGES:
+        if look == "squircle":
+            key = ("squircle", side)
+            if key not in cache:
+                cache[key] = app_icon(side)
+            pixels = centred(cache[key], width, height)
+        else:
+            # The mouse as it sits on the icon: drawn at the icon's size, over a gradient filling the image.
+            key = ("none", side)
+            if key not in cache:
+                cache[key] = app_icon(side, "none")
+            pixels = on_gradient(cache[key], width, height)
         with open(os.path.join(folder, name + ".png"), "wb") as f:
-            f.write(png(centred(icons[side], width, height)))
+            f.write(png(pixels))
         print(f"Store/{name}.png")
 
 
