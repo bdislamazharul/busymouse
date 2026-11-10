@@ -6,6 +6,8 @@ showing you as available.
 BusyMouse lives in the tray. Turn it on or off from the tray menu, the main window, or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd>.
 When you're already using the mouse yourself, it stays out of the way and skips the nudge.
 
+Website, with a live prototype you can try in the browser: **https://busymouse.pages.dev**
+
 <table>
   <tr>
     <td align="center"><img src="docs/screenshots/main-light.png" width="300" alt="BusyMouse main window, light theme"></td>

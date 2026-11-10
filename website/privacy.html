@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy policy — BusyMouse</title>
+  <meta name="description" content="BusyMouse collects no data and makes no network connections.">
+  <link rel="canonical" href="https://busymouse.pages.dev/privacy">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script>try { const t = localStorage.getItem('bm-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<body>
+  <!-- Shared vector art, drawn from the app's own shapes. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="bm-sweep" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+        <stop offset="0" stop-color="#1E6BFF"/><stop offset=".5" stop-color="#4B3FF2"/><stop offset="1" stop-color="#8B2BE8"/>
+      </linearGradient>
+      <!-- The same sweep in the critter's own coordinates, for the hairline between ears and head. -->
+      <linearGradient id="bm-sweep-in" gradientUnits="userSpaceOnUse" x1="-2.559" y1="-2.709" x2="26.559" y2="26.409">
+        <stop offset="0" stop-color="#1E6BFF"/><stop offset=".5" stop-color="#4B3FF2"/><stop offset="1" stop-color="#8B2BE8"/>
+      </linearGradient>
+      <symbol id="critter" viewBox="0 0 24 24">
+        <g transform="translate(2.109 2.233) scale(.82424)">
+          <circle cx="5.9" cy="7" r="3.8" fill="#fff"/><circle cx="18.1" cy="7" r="3.8" fill="#fff"/>
+          <circle cx="6.2" cy="7.3" r="2.1" fill="#FFB3C8"/><circle cx="17.8" cy="7.3" r="2.1" fill="#FFB3C8"/>
+          <ellipse cx="12" cy="14.2" rx="7.9" ry="7" fill="url(#bm-sweep-in)"/>
+          <ellipse cx="12" cy="14.2" rx="7.2" ry="6.3" fill="#fff"/>
+          <circle cx="9.6" cy="12.9" r="1.1" fill="#2A1240"/><circle cx="14.4" cy="12.9" r="1.1" fill="#2A1240"/>
+          <circle cx="12" cy="16.4" r=".9" fill="#2A1240"/>
+          <circle cx="9.95" cy="12.5" r=".38" fill="#fff"/><circle cx="14.75" cy="12.5" r=".38" fill="#fff"/>
+        </g>
+      </symbol>
+      <symbol id="app-icon" viewBox="0 0 24 24">
+        <path d="M12,0 C2.4,0 0,2.4 0,12 0,21.6 2.4,24 12,24 21.6,24 24,21.6 24,12 24,2.4 21.6,0 12,0 Z" fill="url(#bm-sweep)"/>
+        <use href="#critter"/>
+      </symbol>
+      <!-- The pointer the mode preview draws, tip up and left. -->
+      <symbol id="arrow" viewBox="-6 -10 15 20" overflow="visible">
+        <path d="M-5,-8.5 L-5,7 L-1,3.3 L1.6,8.9 L4.6,7.6 L2.1,2.1 L7.4,2.1 Z" fill="currentColor" stroke="var(--arrow-edge, #fff)" stroke-width="1.1" stroke-linejoin="round"/>
+      </symbol>
+      <!-- Tray glyphs on the 16 grid. -->
+      <symbol id="cup-off" viewBox="0 0 16 16">
+        <path d="M1.5,6.5 H11.5 V11 A3.5,3.5 0 0 1 8,14.5 H5 A3.5,3.5 0 0 1 1.5,11 Z M11.5,7.5 H12.5 A2,2 0 0 1 12.5,11.5 H11.5" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="cup-on" viewBox="0 0 16 16">
+        <path d="M1.5,9 H11.5 V11 A3.5,3.5 0 0 1 8,14.5 H5 A3.5,3.5 0 0 1 1.5,11 Z" fill="currentColor" opacity=".3"/>
+        <path d="M1.5,6.5 H11.5 V11 A3.5,3.5 0 0 1 8,14.5 H5 A3.5,3.5 0 0 1 1.5,11 Z M11.5,7.5 H12.5 A2,2 0 0 1 12.5,11.5 H11.5" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+        <path class="steam" d="M5,0.5 C3.8,1.8 6.2,2.7 5,4.5 M8,0.5 C6.8,1.8 9.2,2.7 8,4.5" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="hourglass" viewBox="0 0 20 20">
+        <path d="M5 2.5h10M5 17.5h10M6 2.5c0 4 4 5 4 7.5S6 13.5 6 17.5M14 2.5c0 4-4 5-4 7.5s4 3.5 4 7.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M7.4 16.6c.6-1.9 2.6-2.5 2.6-3.6 0 1.1 2 1.7 2.6 3.6z" fill="currentColor"/>
+      </symbol>
+      <symbol id="i-default" viewBox="0 0 20 20"><path d="M3 10h14M6 7l-3 3 3 3M14 7l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-diagonal" viewBox="0 0 20 20"><path d="M5 5l10 10M5 9.5V5h4.5M15 10.5V15h-4.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-quiet" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1.6" fill="currentColor"/><path d="M10 2.5v3M10 14.5v3M2.5 10h3M14.5 10h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+      <symbol id="i-orbit" viewBox="0 0 20 20"><path d="M15.6 7A6.2 6.2 0 1 0 16 11.5M16.2 3.4V7h-3.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.5 3.5 7.5-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 20 20"><rect x="7" y="7" width="9.5" height="9.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M13 4.6V4.5A1.5 1.5 0 0 0 11.5 3H5A2 2 0 0 0 3 5v6.5A1.5 1.5 0 0 0 4.5 13" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+      <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></symbol>
+      <symbol id="i-windows" viewBox="0 0 16 16"><path fill="currentColor" d="M0 0h7.5v7.5H0zM8.5 0H16v7.5H8.5zM0 8.5h7.5V16H0zM8.5 8.5H16V16H8.5z"/></symbol>
+      <symbol id="i-store" viewBox="0 0 20 20"><path d="M3.5 6.5h13l-.8 9.2a1.5 1.5 0 0 1-1.5 1.3H5.8a1.5 1.5 0 0 1-1.5-1.3zM7 6.5V5a3 3 0 0 1 6 0v1.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path fill="currentColor" d="M7.6 9.2h2.1v2.1H7.6zM10.3 9.2h2.1v2.1h-2.1zM7.6 11.9h2.1V14H7.6zM10.3 11.9h2.1V14h-2.1z"/></symbol>
+      <symbol id="i-terminal" viewBox="0 0 20 20"><rect x="2.5" y="3.5" width="15" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 8l2.5 2L6 12M10 12.5h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-download" viewBox="0 0 20 20"><path d="M10 3v10M6 9.5l4 4 4-4M4 16.5h12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 20 20"><path d="M16 12.4A6.5 6.5 0 0 1 7.6 4a6.5 6.5 0 1 0 8.4 8.4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="nav" id="top">
+    <div class="wrap nav-row">
+      <a class="brand" href="/" aria-label="BusyMouse home">
+        <svg class="brand-icon" aria-hidden="true"><use href="/#app-icon"/></svg>
+        <span>BusyMouse</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="/#try">Try it</a>
+        <a href="/#features">Features</a>
+        <a href="/#cli">Command line</a>
+        <a href="/#faq">FAQ</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="icon-btn" id="site-theme" type="button" aria-label="Switch light or dark theme">
+          <svg class="only-dark" aria-hidden="true"><use href="/#i-sun"/></svg>
+          <svg class="only-light" aria-hidden="true"><use href="/#i-moon"/></svg>
+        </button>
+        <a class="icon-btn" href="https://github.com/bdislamazharul/busymouse" aria-label="BusyMouse on GitHub"><svg aria-hidden="true"><use href="/#i-github"/></svg></a>
+        <a class="btn btn-primary btn-sm" href="/#download">Download</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="wrap doc">
+    <h1>Privacy policy</h1>
+    <p class="updated">Last updated: 9 November 2026</p>
+    <p>BusyMouse does not collect, store or share any personal information.</p>
+    <ul>
+      <li><strong>No data leaves your PC.</strong> BusyMouse makes no network connections: no telemetry, analytics, ads, accounts or update checks.</li>
+      <li><strong>Settings stay on your PC.</strong> Your choices (nudge style, interval, distance, theme and so on) are saved in a settings file in your user profile (<code>%LOCALAPPDATA%\BusyMouse\settings.json</code>, or the app's own storage when installed from the Microsoft Store). Uninstalling BusyMouse, or deleting that file, removes them.</li>
+      <li><strong>Pointer and lock state are used only on your PC.</strong> BusyMouse moves the pointer, checks whether you've used the mouse recently so it can skip a nudge, and, if you turn it on, notices when the PC is locked. None of this is recorded or sent anywhere.</li>
+    </ul>
+    <p>The "no runtime" downloads from GitHub include a small launcher that, only if the .NET Runtime is missing and you agree, downloads it from Microsoft (<code>aka.ms</code> / <code>dotnet.microsoft.com</code>). Microsoft's privacy statement applies to that download. The Microsoft Store version doesn't need it.</p>
+    <h2 style="font-size:24px;margin-top:40px">This website</h2>
+    <p>busymouse.pages.dev uses no cookies, analytics or trackers. It remembers your theme and accent choices in your browser's local storage, which never leaves your device. To show the latest download links it asks GitHub's public API for the newest release; GitHub's privacy statement applies to that request.</p>
+    <p>Questions: open an issue at <a href="https://github.com/bdislamazharul/busymouse/issues">github.com/bdislamazharul/busymouse/issues</a>.</p>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-row">
+      <a class="brand" href="/"><svg class="brand-icon" aria-hidden="true"><use href="#app-icon"/></svg><span>BusyMouse</span></a>
+      <nav aria-label="Footer">
+        <a href="https://github.com/bdislamazharul/busymouse">GitHub</a>
+        <a href="https://github.com/bdislamazharul/busymouse/releases">Releases</a>
+        <a href="https://github.com/bdislamazharul/busymouse/issues">Report an issue</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+      <p>MIT © 2026 Azharul Islam</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('site-theme').addEventListener('click', () => {
+      const root = document.documentElement;
+      const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = dark ? 'light' : 'dark';
+      try { localStorage.setItem('bm-theme', root.dataset.theme); } catch (e) {}
+    });
+  </script>
+</body>
+</html>
